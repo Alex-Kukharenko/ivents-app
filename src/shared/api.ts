@@ -44,3 +44,5 @@ export const trpc = createTRPCNext<AppRouter>({
     }
   },
 })
+
+export * from './schema'

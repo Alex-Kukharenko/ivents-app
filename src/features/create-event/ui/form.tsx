@@ -1,21 +1,22 @@
 import { useForm } from 'react-hook-form'
+import { CreateEventSchema } from '@/shared/schema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import z from 'zod'
 
-type EventFormValues = {
-  title: string
-  description: string
-  date: string
+export type CreateEventValues = z.infer<typeof CreateEventSchema>
+
+type CreateEventFormeProps = {
+  onSubmit: (data: CreateEventValues) => void
 }
 
-export const CreateEventForm = () => {
+export const CreateEventForm = ({ onSubmit }: CreateEventFormeProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<EventFormValues>()
-
-  const onSubmit = (data: EventFormValues) => {
-    console.log(data)
-  }
+    formState: { errors },
+  } = useForm<CreateEventValues>({
+    resolver: zodResolver(CreateEventSchema),
+  })
 
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-8">
@@ -34,7 +35,7 @@ export const CreateEventForm = () => {
             type="text"
             placeholder="Введите название события"
             className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
-            {...register('title', { required: 'Название обязательно' })}
+            {...register('title')}
           />
           {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title.message}</p>}
         </div>
@@ -48,7 +49,7 @@ export const CreateEventForm = () => {
             rows={4}
             placeholder="Введите описание"
             className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition resize-none"
-            {...register('description', { required: 'Описание обязательно' })}
+            {...register('description')}
           />
           <p className="mt-2 text-sm text-gray-500">
             Напишите несколько предложений о предстоящем мероприятии.
@@ -66,7 +67,7 @@ export const CreateEventForm = () => {
             id="date"
             type="date"
             className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
-            {...register('date', { required: 'Дата обязательна' })}
+            {...register('date')}
           />
           {errors.date && <p className="mt-1 text-sm text-red-500">{errors.date.message}</p>}
         </div>

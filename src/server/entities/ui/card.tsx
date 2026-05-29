@@ -37,7 +37,7 @@ export const EventCard = ({ id, title, date, description, data }: EventCardProps
               </button>
               <Link
                 href={`/events/${id}`}
-                className="h-10 px-6 font-semibold rounded-lg border border-slate-900 text-slate-900 align-middle leading-6"
+                className="h-10 px-6 font-semibold rounded-lg border border-slate-900 text-slate-900 flex items-center justify-center"
               >
                 Подробнее
               </Link>
