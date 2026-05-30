@@ -5,3 +5,7 @@ export const CreateEventSchema = z.object({
   description: z.string().optional(),
   date: z.string(),
 })
+
+export const JoinEventSchema = z.object({
+  id: z.number().int().positive(),
+})
