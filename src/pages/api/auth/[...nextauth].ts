@@ -1,9 +1,9 @@
 // src/pages/api/auth/[...nextauth].ts
-import NextAuth from 'next-auth'
+import NextAuth, { type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/server/db'
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -11,7 +11,7 @@ export default NextAuth({
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
         const user = await prisma.user.findUnique({
@@ -19,8 +19,6 @@ export default NextAuth({
         })
 
         if (!user) return null
-
-        // Проверяем пароль
         if (user.password !== credentials.password) return null
 
         return {
@@ -32,10 +30,35 @@ export default NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: 'jwt',
+  session: { strategy: 'jwt' },
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        return {
+          ...token,
+          accessTokenExpires: Date.now() + 60 * 60 * 1000,
+          refreshTokenExpires: Date.now() + 30 * 24 * 60 * 60 * 1000,
+        }
+      }
+      if (Date.now() < (token.accessTokenExpires as number)) {
+        return token
+      }
+      if (Date.now() < (token.refreshTokenExpires as number)) {
+        return {
+          ...token,
+          accessTokenExpires: Date.now() + 60 * 60 * 1000,
+        }
+      }
+      return { ...token, error: 'RefreshTokenExpired' }
+    },
+
+    async session({ session, token }) {
+      session.user.id = Number(token.sub)
+      session.error = token.error as string | undefined
+      return session
+    },
   },
-  /*  pages: {
-    signIn: '/auth/signin', // своя страница входа
-  }, */
-})
+}
+
+export default NextAuth(authOptions)

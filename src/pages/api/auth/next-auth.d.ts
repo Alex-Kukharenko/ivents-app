@@ -1,5 +1,4 @@
-import NextAuth from 'next-auth'
-import { User as DbUser } from '@prisma/client'
+import type { User as DbUser } from '@/generated/prisma/client'
 
 declare module 'next-auth' {
   interface User {
@@ -7,7 +6,17 @@ declare module 'next-auth' {
     name: string
     email: string
   }
+
   interface Session {
     user: DbUser
+    error?: string
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    accessTokenExpires?: number
+    refreshTokenExpires?: number
+    error?: string
   }
 }
