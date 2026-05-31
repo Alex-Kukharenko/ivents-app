@@ -1,6 +1,6 @@
 import { isAuth, publicProcedure, router } from '../trpc'
 import { prisma } from '../db'
-import { CreateEventSchema, JoinEventSchema } from '@/shared/schema'
+import { CreateEventSchema, JoinEventSchema, LeaveEventSchema } from '@/shared/schema'
 import z from 'zod'
 
 export const eventRouter = router({
@@ -62,6 +62,19 @@ export const eventRouter = router({
         data: {
           eventId: input.id,
           userId: user.id,
+        },
+      })
+    }),
+  leave: publicProcedure
+    .input(LeaveEventSchema)
+    .use(isAuth)
+    .mutation(({ input, ctx: { user } }) => {
+      return prisma.participation.delete({
+        where: {
+          userId_eventId: {
+            userId: user.id,
+            eventId: input.id,
+          },
         },
       })
     }),

@@ -2,6 +2,7 @@ import { useSession } from 'next-auth/react'
 import { EventCard } from '@/entities/ui/card'
 import { trpc } from '@/shared/api'
 import { JoinEventButton } from '@/features/join-event'
+import { LeaveEventButton } from '@/features/leave-event'
 
 export default function Home() {
   const { data: session } = useSession()
@@ -15,7 +16,14 @@ export default function Home() {
           <li key={event.id}>
             <EventCard
               {...event}
-              action={!event.isJoined && <JoinEventButton eventId={event.id} onSuccess={refetch} />}
+              action={
+                session &&
+                (event.isJoined ? (
+                  <LeaveEventButton eventId={event.id} onSuccess={refetch} />
+                ) : (
+                  <JoinEventButton eventId={event.id} onSuccess={refetch} />
+                ))
+              }
             />
           </li>
         ))}

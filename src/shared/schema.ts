@@ -10,6 +10,10 @@ export const JoinEventSchema = z.object({
   id: z.number().int().positive(),
 })
 
+export const LeaveEventSchema = z.object({
+  id: z.number().int().positive(),
+})
+
 // Auth schemas
 export const SignInSchema = z.object({
   email: z.string().check(z.email({ error: 'Некорректный email' })),
