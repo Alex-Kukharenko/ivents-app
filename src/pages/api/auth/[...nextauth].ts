@@ -2,6 +2,7 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/server/db'
+import argon2 from 'argon2'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,7 +20,9 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!user) return null
-        if (user.password !== credentials.password) return null
+
+        const isValid = await argon2.verify(user.password, credentials.password)
+        if (!isValid) return null
 
         return {
           id: user.id,
@@ -58,6 +61,9 @@ export const authOptions: NextAuthOptions = {
       session.error = token.error as string | undefined
       return session
     },
+  },
+  pages: {
+    signIn: '/auth',
   },
 }
 
