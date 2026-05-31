@@ -1,4 +1,3 @@
-// src/server/trpc.ts
 import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
 import { Context } from './context'

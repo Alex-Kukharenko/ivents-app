@@ -1,21 +1,9 @@
-import { CreateEventForm, EventFormValues } from '@/features'
-import { trpc } from '@/shared/api'
-import { useRouter } from 'next/router'
+import { CreateEventForm } from '@/features'
 
 export default function CreateEvent() {
-  const router = useRouter()
-  const { mutate } = trpc.event.create.useMutation({
-    onSuccess: (data) => {
-      router.push(`/events/${data.id}`)
-    },
-  })
-  const handleSubmit = (data: EventFormValues) => {
-    mutate(data)
-  }
-
   return (
     <div className="mx-auto max-w-4xl">
-      <CreateEventForm onSubmit={handleSubmit} />
+      <CreateEventForm />
     </div>
   )
 }

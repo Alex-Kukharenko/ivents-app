@@ -14,6 +14,13 @@ export const LeaveEventSchema = z.object({
   id: z.number().int().positive(),
 })
 
+export const UpdateEventSchema = z.object({
+  id: z.number().int().positive(),
+  title: z.string().min(5, 'Минимум 5 символов'),
+  description: z.string().optional(),
+  date: z.string(),
+})
+
 // Auth schemas
 export const SignInSchema = z.object({
   email: z.string().check(z.email({ error: 'Некорректный email' })),
@@ -26,5 +33,7 @@ export const RegisterSchema = z.object({
   password: z.string().min(6, 'Минимум 6 символов'),
 })
 
+export type CreateEventValues = z.infer<typeof CreateEventSchema>
+export type UpdateEventValues = z.infer<typeof UpdateEventSchema>
 export type SignInValues = z.infer<typeof SignInSchema>
 export type RegisterValues = z.infer<typeof RegisterSchema>

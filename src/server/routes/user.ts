@@ -1,4 +1,3 @@
-// src/server/routes/user.ts
 import { publicProcedure, router } from '../trpc'
 import { prisma } from '../db'
 import { RegisterSchema } from '@/shared/schema'

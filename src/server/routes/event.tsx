@@ -1,7 +1,13 @@
 import { isAuth, publicProcedure, router } from '../trpc'
 import { prisma } from '../db'
-import { CreateEventSchema, JoinEventSchema, LeaveEventSchema } from '@/shared/schema'
+import {
+  CreateEventSchema,
+  JoinEventSchema,
+  LeaveEventSchema,
+  UpdateEventSchema,
+} from '@/shared/schema'
 import z from 'zod'
+import { TRPCError } from '@trpc/server'
 
 export const eventRouter = router({
   findMany: publicProcedure.query(async ({ ctx: { user } }) => {
@@ -29,6 +35,7 @@ export const eventRouter = router({
           title: true,
           description: true,
           date: true,
+          authorId: true,
           participation: {
             select: {
               user: {
@@ -75,6 +82,31 @@ export const eventRouter = router({
             userId: user.id,
             eventId: input.id,
           },
+        },
+      })
+    }),
+  update: publicProcedure
+    .input(UpdateEventSchema)
+    .use(isAuth)
+    .mutation(async ({ input, ctx: { user } }) => {
+      const event = await prisma.event.findUnique({
+        where: { id: input.id },
+      })
+
+      if (!event) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Событие не найдено' })
+      }
+
+      if (event.authorId !== user.id) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Нет доступа' })
+      }
+
+      return prisma.event.update({
+        where: { id: input.id },
+        data: {
+          title: input.title,
+          description: input.description,
+          date: new Date(input.date),
         },
       })
     }),

@@ -1,4 +1,3 @@
-// src/features/leave-event/ui/button.tsx
 import { trpc } from '@/shared/api'
 
 type LeaveEventButtonProps = {

@@ -1,4 +1,3 @@
-// src/widgets/layout/ui/layout.tsx
 import { Header } from '@/widgets/header'
 import { ReactNode } from 'react'
 

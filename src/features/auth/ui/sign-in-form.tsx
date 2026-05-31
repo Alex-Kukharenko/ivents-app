@@ -1,4 +1,3 @@
-// src/features/auth/ui/sign-in-form.tsx
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SignInSchema, type SignInValues } from '@/shared/schema'

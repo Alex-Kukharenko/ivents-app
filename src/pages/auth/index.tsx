@@ -1,4 +1,3 @@
-// src/pages/auth/index.tsx
 import { useState } from 'react'
 import { SignInForm, RegisterForm } from '@/features/auth'
 
