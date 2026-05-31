@@ -1,11 +1,46 @@
 import { isAuth, publicProcedure, router } from '../trpc'
 import { prisma } from '../db'
 import { CreateEventSchema, JoinEventSchema } from '@/shared/schema'
+import z from 'zod'
 
 export const eventRouter = router({
-  findMany: publicProcedure.query(() => {
-    return prisma.event.findMany()
+  findMany: publicProcedure.query(async ({ ctx: { user } }) => {
+    const events = await prisma.event.findMany({
+      include: {
+        participation: true,
+      },
+    })
+    return events.map(({ participation, ...events }) => ({
+      ...events,
+      isJoined: participation.some(({ userId }) => userId === user?.id),
+    }))
   }),
+  findUnique: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .use(isAuth)
+    .query(({ input }) => {
+      return prisma.event.findUnique({
+        where: input,
+        select: {
+          title: true,
+          description: true,
+          date: true,
+          participation: {
+            select: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      })
+    }),
   create: publicProcedure
     .input(CreateEventSchema)
     .use(isAuth)
